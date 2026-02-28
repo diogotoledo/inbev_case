@@ -48,7 +48,7 @@ inbev-case/
 
 ### 1. Clone o repositório
 ```bash
-git clone <repo-url>
+git clone [<repo-url>](https://github.com/diogotoledo/inbev_case)
 cd inbev-case
 ```
 
