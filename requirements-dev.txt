@@ -1,0 +1,8 @@
+# Install with: pip install -r requirements-dev.txt
+# Used for local development and exploratory analysis only.
+-r requirements.txt
+
+# Exploratory Data Analysis
+jupyter==1.1.1
+notebook==7.2.2
+ipykernel==6.29.5
