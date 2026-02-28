@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import logging
+from glob import glob
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -10,14 +11,27 @@ GOLD_PATH   = "/opt/airflow/data/gold"
 
 
 def load_silver(silver_path: str = SILVER_PATH) -> pd.DataFrame:
-    """Load all Parquet files from the silver layer into a single DataFrame."""
+    """Load all Parquet files from the silver layer into a single DataFrame.
+
+    Uses explicit glob to collect only .parquet files, safely ignoring any
+    non-Parquet files (e.g. .gitkeep) that may exist in the directory.
+    """
     if not os.path.exists(silver_path):
         raise FileNotFoundError(f"Silver path not found: {silver_path}")
 
-    df = pd.read_parquet(silver_path, engine="pyarrow")
+    parquet_files = glob(os.path.join(silver_path, "**/*.parquet"), recursive=True)
 
-    # Parquet partitioned columns are read as Categorical — convert to string
-    # to avoid pandas FutureWarning and groupby expansion issues.
+    if not parquet_files:
+        raise FileNotFoundError(
+            f"No Parquet files found in silver path: {silver_path}"
+        )
+
+    logger.info(f"Found {len(parquet_files)} Parquet file(s) in silver layer")
+
+    df = pd.read_parquet(parquet_files, engine="pyarrow")
+
+    # Parquet partition columns are read as Categorical — convert to string
+    # to avoid groupby expansion issues (observed=False FutureWarning)
     for col in ["country", "state", "brewery_type"]:
         if col in df.columns and hasattr(df[col], "cat"):
             df[col] = df[col].astype(str)
