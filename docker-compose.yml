@@ -9,7 +9,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
-    AIRFLOW__WEBSERVER__SECRET_KEY: 'e0107c1c88f4cf3e182e1a3355105ae06ab429c9594c6f68202e1171fe701103'
+    AIRFLOW__WEBSERVER__SECRET_KEY: '${AIRFLOW_SECRET_KEY}'
     PYTHONPATH: /opt/airflow
   volumes:
     - ./dags:/opt/airflow/dags
